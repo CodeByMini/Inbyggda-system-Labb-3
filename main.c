@@ -4,36 +4,30 @@
 #include <stdio.h>
 #include <avr/interrupt.h>
 
-#include "serial.h"
-#include "button.h"
+#include "adc.h"
+#include "led.h"
 #include "timer.h"
 
-volatile int buttonState = 0;
+int adcValue = 255;
 
 ISR(TIMER0_COMPA_vect) {
-	button_state(&buttonState);
+	/* Start single conversion */
+	ADCSRA |= (1 << ADSC);
+
+	/* Set RED PWM value to potentiometer reading */
+	OCR2A = adcValue;//flip_it_and_reverse_it(adcValue); //obsolete function due to unability to read 
 }
 
-int main (void) {
-	uart_init();
+ISR(ADC_vect) {
+	/* Get value from ADC Data Register. Reading only the highest 8 bits out of 10*/
+	adcValue = ADCH;
+}
+
+void main (void) {
+	adc_init();
 	timer_init();
-	/* Enable Global Interrupt */
-	sei(); 
+	LED_init();
+	sei(); //enable interrupts
 
-	/* Keep track if the button has been pressed or not */
-	int lastButtonState = 0; 
-
-	while (1) {
-		/* If the button is pressed but yet to be released */
-		if (buttonState == 1 && lastButtonState == 0){
-			printf_P(PSTR("pressed\r\n"));
-			lastButtonState = buttonState;
-		}
-		/* if the button has been released and last it was pushed*/
-		if (buttonState == 0 && lastButtonState == 1){
-			printf_P(PSTR("released\r\n"));
-			lastButtonState = buttonState;
-		}
-	}
-	return 1;
+	while (1) {}
 }
