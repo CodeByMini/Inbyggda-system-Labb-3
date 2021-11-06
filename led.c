@@ -8,22 +8,26 @@ void LED_init() {
     DDRB |= (1<<RED_PIN);
 
     /*Flip the bits so they start high, ie: led off*/
-    BIT_FLIP(PORTB,RED);
-    BIT_FLIP(PORTB,BLUE);
-    BIT_FLIP(PORTB,GREEN);
+    PORTB |= (1 << BLUE);
+    PORTB |= (1 << GREEN);
+    PORTB |= (1 << RED);
 }
 
-uint8_t simple_ramp(uint8_t *pwm, uint8_t *dir){
-	if(*pwm == 255 || *pwm == 0){
-		*dir *= -1;
+int simple_ramp(STATE * state){
+	if(state->pwm >= 255 || state->pwm <= 0){
+		state->dir *= -1;
 	}
-	*pwm += *dir;
-	return *pwm;
+	state->pwm += state->dir;
+	
+	return state->pwm;
 }
 
-uint8_t flip_it_and_reverse_it(uint8_t pwmValueToBeFlipped){
-    int temp;
-    temp = pwmValueToBeFlipped - 255;
-    temp = temp * -1;
-    return (uint8_t)temp;
+uint8_t switcher(STATE * state){
+	if(state->pwm == 0){
+		state->pwm=255;
+	}else{
+        state->pwm=0;
+    }
+	
+	return state->pwm;
 }

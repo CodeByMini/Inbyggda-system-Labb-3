@@ -7,27 +7,26 @@
 #include "adc.h"
 #include "led.h"
 #include "timer.h"
+#include "serial.h"
+#include "state.h"
+#include "button.h"
 
-int adcValue = 255;
+#define DELAY 1
 
-ISR(TIMER0_COMPA_vect) {
-	/* Start single conversion */
-	ADCSRA |= (1 << ADSC);
-
-	/* Set RED PWM value to potentiometer reading */
-	OCR2A = adcValue;//flip_it_and_reverse_it(adcValue); //obsolete function due to unability to read 
-}
-
-ISR(ADC_vect) {
-	/* Get value from ADC Data Register. Reading only the highest 8 bits out of 10*/
-	adcValue = ADCH;
-}
-
-void main (void) {
+int main (void) {
+	uart_init();
+	button_init();
 	adc_init();
 	timer_init();
 	LED_init();
 	sei(); //enable interrupts
+	printf_P(PSTR("Hello World\r\n"));
 
-	while (1) {}
+	volatile STATE state = {0,1,1};
+	
+	while (1) {
+		change_state(&state);
+		handle_state(&state);
+	}
+	return 1;
 }

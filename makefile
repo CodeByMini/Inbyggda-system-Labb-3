@@ -3,9 +3,12 @@ BIN = lab3# namn på output-binären
 # Lista på C-ﬁler ingående i binären
 SOURCES = \
 		  main.c \
+		  serial.c \
+		  button.c \
 		  adc.c \
 		  timer.c \
-		  led.c
+		  led.c \
+		  state.c
 
 #PORT = /dev/ttyS4#
 #PORT = /dev/tty.usbmodem146401 

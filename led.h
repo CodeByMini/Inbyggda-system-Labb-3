@@ -1,5 +1,6 @@
 #ifndef _LED_H_
 #define _LED_H_
+#include "state.h"
 
 /*if position b in byte b is set to 1 set it to 0 and vice versa*/
 #define BIT_FLIP(a,b) ((a) ^= (1<<(b)))
@@ -12,9 +13,11 @@
 #define GREEN PB2
 #define RED PB3
 
+#define BIT_FLIP(a,b) ((a) ^= (1<<(b)))
+
 void LED_init(void);
-uint8_t simple_ramp(uint8_t *, uint8_t *);
-uint8_t flip_it_and_reverse_it(uint8_t);
+int simple_ramp(STATE*);
+uint8_t switcher(STATE*);
 
 #endif
 
